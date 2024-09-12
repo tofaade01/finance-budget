@@ -21,12 +21,6 @@ const WalletForm = () => {
         onChange={(e) => setWallet({ ...wallet, name: e.target.value })}
         placeholder="Wallet name"
       />
-      <input
-        type="number"
-        value={wallet.balance}
-        onChange={(e) => setWallet({ ...wallet, balance: e.target.value })}
-        placeholder="Initial balance"
-      />
       <button type="submit">Add Wallet</button>
     </form>
   );

@@ -1,32 +1,51 @@
-import { useEffect, useContext } from 'react';
+import { useEffect, useContext, useState } from 'react';
 import axios from 'axios';
 import { BudgetContext } from '../contexts/budget';
+import CategoryEditModal from './categoryeditmodal'; // Import the modal component
 
 const CategoryList = () => {
   const { categories, setCategories } = useContext(BudgetContext);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null); // Track the selected category
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
       const response = await axios.get('https://digistar-demo-be.vercel.app/api/categories');
       setCategories(response.data.data);
-      console.log(response.data.data)
     };
     fetchCategories();
   }, [setCategories]);
 
-  const deleteCategory = async (id) => {
-    await axios.delete(`https://digistar-demo-be.vercel.app/api/categories/${id}`);
-    setCategories(categories.filter((category) => category.id !== id));
+  const handleEdit = (id) => {
+    setSelectedCategoryId(id);
+    setShowModal(true);
   };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
   return (
-    <ul>
-      {categories.map((category) => (
-        <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }} key={category.id}>
-          {category.name} - {category.wallet ? category.wallet.name : ''}
-          <button onClick={() => deleteCategory(category.id)}>Delete</button>
-        </li>
-      ))}
-    </ul>
+    <>
+      <ul>
+        {categories.map((category) => (
+          <li key={category._id} style={{ display: 'flex', alignItems: 'center' }}>
+            {category.name} - {category.wallet ? category.wallet.name : ''}
+            <button
+              className="btn btn-secondary btn-sm" style={{ marginLeft: '43rem' }}
+              onClick={() => handleEdit(category._id)}
+              aria-label="Edit"
+            >
+              Edit
+            </button>
+            <button className='btn btn-danger btn-sm' onClick={() => deleteCategory(category._id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+
+      {/* Render the edit modal */}
+      <CategoryEditModal show={showModal} handleClose={handleCloseModal} categoryId={selectedCategoryId} />
+    </>
   );
 };
 
